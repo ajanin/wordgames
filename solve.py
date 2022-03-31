@@ -23,6 +23,12 @@ def main(argv):
     parse_arguments(argv[1:])
     setup_logging()
 
+    # Wordle is a bit weird in that it will report a letter as gray if
+    # it's already been reported as green or yellow. Remove from gray
+    # any that have been mentioned in yellow or green.
+
+    Global.args.gray -= set(Global.args.green) | set(''.join(Global.args.yellow))
+
     lettercounts = collections.Counter()
     candidates = set()
     words = set()
@@ -47,7 +53,7 @@ def main(argv):
     # Remove any we have info about.
     for letter in (set(Global.args.green) |
                    Global.args.gray |
-                   set(''.join(Global.args.yellow)) - set('.')):
+                   set(''.join(Global.args.yellow))) - set('.'):
         del lettercounts[letter]
 
     if len(lettercounts) == 0:
