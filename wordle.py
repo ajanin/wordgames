@@ -24,7 +24,7 @@ def main(argv):
 
     words = read_words(Global.args.wordfile)
     word = random.sample(words, 1)[0]
-    word = 'panic'
+    word = 'prime'
 
     print(f'"{word}"')
 

@@ -1,0 +1,4 @@
+solve.py is an old solver and probably shouldn't be used.
+solve2.py is a hard-mode solver.
+solve3.py is supposed to be an easy mode solver, but it isn't working.
+wordle.py is a wordle simulator.

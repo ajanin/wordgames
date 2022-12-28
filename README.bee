@@ -1,0 +1,16 @@
+----------------------------------------------------------------------
+Notes to self on "what is a word" in bee
+
+The big problem is "what is a word". They use lots of uncommon words, but no proper names.
+So maybe use RC_2017, but remove proper names?
+
+Some proper names are also words, e.g. stone.
+Ugh. Some combination of how common the word is in RC plus how common a name it is?
+
+There are a few sites that list proper names that are also words:
+https://www.wordnik.com/lists/common-english-words-that-are-also-first-names
+
+So... Start with RC. Remove any in 20k names. Add back any in also-first-names?
+----------------------------------------------------------------------
+
+
