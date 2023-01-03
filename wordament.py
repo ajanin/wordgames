@@ -4,6 +4,7 @@
 #
 # TODO:
 #
+# Make it work if there's more than one "special" (e.g. x/y and -xy)
 # Get a better word list.
 # Figure out scoring for real.
 # Do filtering (e.g. star rewards) here rather than on command line.
@@ -171,6 +172,8 @@ def main(argv):
 
     word2count = read_unigrams(Global.args.unigrams, Global.args.mincount)
 
+    word2score = {}
+
     # For now, handle x/y outside the class by running it twice.
     # There's a combinatoric explosion if multiple "/" occur, so
     # only allow one.
@@ -190,13 +193,9 @@ def main(argv):
         wordament2 = Wordament(Global.args.letters.replace(f'{let1}/{let2}', let2))
         wordament2.scores[(slashindex-1) % 4][(slashindex-1) // 4] = 20
         for word, count in word2count.items():
-            score = wordament1.run(word)
+            score = max(wordament1.run(word), wordament2.run(word))
             if score:
-                print(word, word2count[word], score)
-            else:
-                score = wordament2.run(word)
-                if score:
-                    print(word, word2count[word], score)
+                word2score[word] = score
     else:
         # Does not contain x/y
         wordament = Wordament(Global.args.letters)
@@ -204,7 +203,20 @@ def main(argv):
         for word, count in word2count.items():
             score = wordament.run(word)
             if score:
-                print(word, word2count[word], score)
+                word2score[word] = score
+
+    # Sort first by score then by how common the word is.
+    sortedwords = sorted(word2score, key=lambda w: (word2score[w], word2count[w]), reverse=True)
+
+    if Global.args.N > 0 and Global.args.n > 0:
+        print(f"\n{Global.args.n}-letter words:\n")
+        # Print out N n-letter words
+        for word in [w for w in sortedwords if len(w) == Global.args.n][:Global.args.N]:
+            print(word, word2count[word], word2score[word])
+
+    print("\nAll words:\n")
+    for word in sortedwords:
+        print(word, word2count[word], word2score[word])
 # end main()
 
 def read_unigrams(f, mincount):
@@ -214,6 +226,8 @@ def read_unigrams(f, mincount):
         if line == "":
             continue
         count, word = line.split()
+        if len(word) < 3:
+            continue
         count = int(count)
         if count < mincount:
             continue
@@ -264,6 +278,14 @@ def parse_arguments(strs):
     parser.add_argument('-version', '--version', action='version', version=str(VERSION))
     parser.add_argument('letters',
                         help="Letters in wordament")
+    parser.add_argument('-n',
+                        help="First print out n-letter words",
+                        type=int,
+                        default=4)
+    parser.add_argument('-N',
+                        help="Print out N n-letter words",
+                        type=int,
+                        default=20)
     parser.add_argument('-unigrams',
                         help="Unigram count file",
                         type=argparse.FileType('r'),
